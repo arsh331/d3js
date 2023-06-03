@@ -1,0 +1,14 @@
+{
+    "nodes": [
+        { "id": "Eminem" },
+        { "id": "NF" },
+        { "id": "Logic" },
+        { "id": "Dr. Dre" }
+      ],
+      "links": [
+        { "source": "Dr. Dre", "target": "NF" },
+        { "source": "Dr. Dre", "target": "Logic" },
+        { "source": "Dr. Dre", "target": "Dr. Dre" },
+        { "source": "Dr. Dre", "target": "Eminem" }
+      ]
+    }

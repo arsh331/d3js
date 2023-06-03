@@ -1,0 +1,17 @@
+{
+    "nodes": [
+        { "id": "Eminem" },
+        { "id": "NF" },
+        { "id": "Logic" },
+        { "id": "Dr. Dre" },
+        { "id": "Snoop Dogg" },
+        { "id": "J Cole" }
+      ],
+      "links": [
+        { "source": "Logic", "target": "NF" },
+        { "source": "Logic", "target": "Dr. Dre" },
+        { "source": "Logic", "target": "Logic" },
+        { "source": "Logic", "target": "Snoop Dogg" },
+        { "source": "Logic", "target": "J Cole" }
+      ]
+    }
