@@ -7,9 +7,8 @@ import data4 from './data4.json';
 import data5 from './data5.json';
 import data6 from './data6.json';
 const NetworkChart = () => {
-  
   const [chartData, setData] = useState(data);
-
+  console.log(chartData);
   const handleNodeClick = (node) => {
     console.log(node.id);
     const updatedData = node.id === 'NF' ? data2 : node.id === 'Logic' ? data3 : 
