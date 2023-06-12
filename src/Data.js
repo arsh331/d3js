@@ -53,13 +53,6 @@ const Data = () => {
 
     return (
         <div>
-            <form> 
-                <label>
-                    Enter artist mbid:
-                </label>              
-                <input type="text" id="artist_name" name="artist_name"></input>  
-            </form>
-            <button onClick={logGraph}>Log graph</button>
             <NetworkChart data={transformedArtists} fetchData={fetchData}/>
         </div>
     );
