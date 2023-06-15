@@ -3,7 +3,7 @@ import NetworkChart from "./NetworkChart";
 import Network from "./Network";
 
 const Data = () => {
-    var artist_mbid = "9b34cd6a-b874-4e75-bec8-1c174fe295d0";
+    var artist_mbid = "8f6bd1e4-fbe1-4f50-aa9b-94c450ec0f11";
     var url = "https://labs.api.listenbrainz.org/similar-artists/json?algorithm=session_based_days_7500_session_300_contribution_5_threshold_10_limit_100_filter_True_skip_30&artist_mbid=";
     const [similarArtists, setSimilarArtists] = useState([]);
     const [artist, setArtist] = useState("");
@@ -53,6 +53,13 @@ const Data = () => {
 
     return (
         <div>
+            <form> 
+                <label>
+                    Enter artist mbid:
+                </label>              
+                <input type="text" id="artist_name" name="artist_name"></input>  
+            </form>
+            <button onClick={logGraph}>Log graph</button>
             <NetworkChart data={transformedArtists} fetchData={fetchData}/>
         </div>
     );
