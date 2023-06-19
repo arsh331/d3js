@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
 import { ResponsiveNetwork } from '@nivo/network';
-import Data from './Data';
 const NetworkChart = (props) => {
   
   const chartData = props.data;
-  console.log(chartData);
+  chartData ? console.log(chartData) : console.log("No data yet");
   
   return (
     chartData ?
@@ -13,20 +12,20 @@ const NetworkChart = (props) => {
         data={chartData}
         width={1000}
         height={1000}
-        repulsivity={50}
+        repulsivity={200}
         iterations={120}
-        centeringStrength={0.075}
-        nodeBorderWidth={2}
-        nodeColor={"#2284c9"}
+        centeringStrength={0.1}
+        nodeBorderWidth={5}
+        nodeColor={n => n.color}
         linkThickness={2}
         linkColor={{ from: 'source.color', modifiers: [] }}
+        linkDistance={n => n.distance}
         motionStiffness={160}
         motionDamping={12}
-        nodeSize={20}
-        activeNodeSize={40}
-        inactiveNodeSize={10}
+        nodeSize={n => n.size}
+        activeNodeSize={n => n.size * 1.5}
+        inactiveNodeSize={n => n.size / 1.5} 
         isInteractive={true}
-        colors={'red'}
         onClick={(node) => props.fetchData(node.data.artist_mbid)}
       />
     </div>

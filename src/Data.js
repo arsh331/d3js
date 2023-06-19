@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from "react";
 import NetworkChart from "./NetworkChart";
+import Input from "./Input";
 const Data = () => {
+    const LIMIT_VALUE = 18;
     var artist_mbid = "8f6bd1e4-fbe1-4f50-aa9b-94c450ec0f11";
     var url = "https://labs.api.listenbrainz.org/similar-artists/json?algorithm=session_based_days_7500_session_300_contribution_5_threshold_10_limit_100_filter_True_skip_30&artist_mbid=";
     const [similarArtists, setSimilarArtists] = useState([]);
     const [artist, setArtist] = useState("");
-    
+    const [limit, setLimit] = useState(LIMIT_VALUE);
     var transformedArtists = {}; 
 
     const fetchData = (artist_mbid) => {
@@ -25,32 +27,31 @@ const Data = () => {
 
       
     var artistList = similarArtists && similarArtists.data && (similarArtists.data.map((artist) => artist));
+    artistList = artistList && artistList.splice(0, limit);
     var mainArtist = artist && artist.data && artist.data[0];
     artistList && artistList.push(mainArtist);
         
     transformedArtists = artistList && {
-        "nodes": artistList.map((artist) => {
+        "nodes": artistList.map((artist, index) => {
             return {
                 "id": artist.name,
-                "artist_mbid": artist.artist_mbid
+                "artist_mbid": artist.artist_mbid,
+                "size": artist.artist_mbid === mainArtist.artist_mbid ? 100 : 50,
+                "color": artist.artist_mbid === mainArtist.artist_mbid ? "#00A6A6" : index < limit/3 ? "#F7B2AD" : index < limit/3*2 ? "#342E37" : "#E3D985"
             };
         }),
-        "links": artistList.map((artist) => {
+        "links": artistList.map((artist, index) => {
             return {
                 "source": mainArtist.name,
                 "target": artist.name,
+                "distance": index < limit/3 ? 100 : index < limit/3*2 ? 200 : 300
                 };
         }),
-    }
-    
-    const logGraph = () => {
-        console.log(artist_mbid);
-        artist_mbid = document.getElementById("artist_name").value;
-        console.log(document.getElementById("artist_name").value);
     }
 
     return (
         <div>
+            <Input fetchData={fetchData} setLimit={setLimit}/>
             <NetworkChart data={transformedArtists} fetchData={fetchData}/>
         </div>
     );
