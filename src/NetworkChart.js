@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { ResponsiveNetwork } from '@nivo/network';
+import { ResponsiveNetwork, NodeProps, LinkProps, NodeTooltipProps, NetworkSvgProps } from '@nivo/network'
 const NetworkChart = (props) => {
   
   const chartData = props.data;

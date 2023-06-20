@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import NetworkChart from "./NetworkChart";
+import Graph from "./Graph";
 import Input from "./Input";
 const Data = () => {
     const LIMIT_VALUE = 18;
@@ -36,8 +36,9 @@ const Data = () => {
             return {
                 "id": artist.name,
                 "artist_mbid": artist.artist_mbid,
-                "size": artist.artist_mbid === mainArtist.artist_mbid ? 100 : 50,
-                "color": artist.artist_mbid === mainArtist.artist_mbid ? "#00A6A6" : index < limit/3 ? "#F7B2AD" : index < limit/3*2 ? "#342E37" : "#E3D985"
+                "size": artist.artist_mbid === mainArtist.artist_mbid ? 150 : 85,
+                "color": artist.artist_mbid === mainArtist.artist_mbid ? "#00A6A6" : index < limit/3 ? "#F7B2AD" : index < limit/3*2 ? "#7D84B2" : "#E3D985",
+                "seed": artist.artist_mbid === mainArtist.artist_mbid ? 1 : 0
             };
         }),
         "links": artistList.map((artist, index) => {
@@ -52,7 +53,7 @@ const Data = () => {
     return (
         <div>
             <Input fetchData={fetchData} setLimit={setLimit}/>
-            <NetworkChart data={transformedArtists} fetchData={fetchData}/>
+            <Graph data={transformedArtists} fetchData={fetchData}/>
         </div>
     );
 }

@@ -4,7 +4,6 @@ import './index.css';
 import Data from './Data';
 import Input from './Input';
 import reportWebVitals from './reportWebVitals';
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
