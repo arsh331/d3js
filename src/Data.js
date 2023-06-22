@@ -1,6 +1,12 @@
 import React, {useState, useEffect} from "react";
 import Graph from "./Graph";
 import Input from "./Input";
+
+Array.prototype.scaleBetween = function(scaledMin, scaledMax, num) {
+    var max = Math.max.apply(Math, this);
+    var min = Math.min.apply(Math, this);
+    return ((scaledMax-scaledMin)*(num-min)/(max-min)+scaledMin);
+}
 const Data = () => {
     const LIMIT_VALUE = 18;
     var artist_mbid = "8f6bd1e4-fbe1-4f50-aa9b-94c450ec0f11";
@@ -25,31 +31,35 @@ const Data = () => {
         fetchData(artist_mbid);
     }, []);
 
-      
+    var scoreList = [];  
     var artistList = similarArtists && similarArtists.data && (similarArtists.data.map((artist) => artist));
     artistList = artistList && artistList.splice(0, limit);
     var mainArtist = artist && artist.data && artist.data[0];
     artistList && artistList.push(mainArtist);
-        
+    console.log(artistList);    
     transformedArtists = artistList && {
         "nodes": artistList.map((artist, index) => {
+            artist.score && scoreList.push(artist.score);
             return {
                 "id": artist.name,
                 "artist_mbid": artist.artist_mbid,
                 "size": artist.artist_mbid === mainArtist.artist_mbid ? 150 : 85,
                 "color": artist.artist_mbid === mainArtist.artist_mbid ? "#00A6A6" : index < limit/3 ? "#F7B2AD" : index < limit/3*2 ? "#7D84B2" : "#E3D985",
-                "seed": artist.artist_mbid === mainArtist.artist_mbid ? 1 : 0
+                "seed": artist.artist_mbid === mainArtist.artist_mbid ? 1 : 0,
+                "score": artist.score
             };
         }),
         "links": artistList.map((artist, index) => {
+            
             return {
                 "source": mainArtist.name,
                 "target": artist.name,
-                "distance": index < limit/3 ? 100 : index < limit/3*2 ? 200 : 300
+                "distance": (artist.artist_mbid != mainArtist.artist_mbid ? scoreList.scaleBetween(300, 100, artist.score) : 0),
+                "strength": artist.score < 5000 ? 2 : artist.score < 6000 ? 4 : 8,
                 };
         }),
     }
-
+    scoreList && console.log(scoreList);
     return (
         <div>
             <Input fetchData={fetchData} setLimit={setLimit}/>

@@ -8,6 +8,7 @@ interface GraphProps {
 }
 
 const Graph = (props: GraphProps) => {
+    console.log(props.data);
     type Node = (typeof props.data)['nodes'][number];
     type Link = (typeof props.data)['links'][number];
     
@@ -58,7 +59,7 @@ const Graph = (props: GraphProps) => {
         >
             <strong>Name: {node.id}</strong>
             <br />
-            MusicBrainz ID: {node.data.artist_mbid}
+            {node.data.score && <>Score: {node.data.score}</>}
         </div>
     )
 
