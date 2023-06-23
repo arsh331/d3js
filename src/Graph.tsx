@@ -5,6 +5,7 @@ import { InputNode } from '@nivo/network';
 interface GraphProps {
     data: any;
     fetchData: Function;
+    backgroundColor: string;
 }
 
 const Graph = (props: GraphProps) => {
@@ -42,6 +43,7 @@ const Graph = (props: GraphProps) => {
         <animated.text 
         textAnchor='middle'
         alignmentBaseline='middle'
+        style={{ pointerEvents: 'none', fontSize: '16px', fill: 'white'}}
         >
             {node.id.length > 10 ? node.id.slice(0, 6) + '...' : node.id}
         </animated.text>
@@ -52,9 +54,9 @@ const Graph = (props: GraphProps) => {
         <div
             style={{
                 background: node.color,
-                color: '#000000',
+                color: '#ffffff',
                 padding: '9px 12px',
-                borderRadius: 'px'
+                borderRadius: '3px'
             }}
         >
             <strong>Name: {node.id}</strong>
@@ -73,7 +75,7 @@ const Graph = (props: GraphProps) => {
         nodeBorderWidth: 5,
         nodeColor: node => node.color,
         linkThickness: 2,
-        linkColor: { from: 'source.color', modifiers: [] },
+        linkColor: { from: 'source.color', modifiers: [['brighter', 0.8]] },
         linkDistance: node => node.distance,
         nodeSize: node => node.size,
         activeNodeSize: node => node.size * 1.2,
@@ -84,7 +86,7 @@ const Graph = (props: GraphProps) => {
     
     return (
         props.data ?
-        <div style={{ height: '1000px' }}>
+        <div style={{ height: '1000px', background: props.backgroundColor }}>
             <ResponsiveNetwork
                 {...chartProperties}
                 nodeComponent={CustomNodeComponent}
