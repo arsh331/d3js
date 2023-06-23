@@ -26,15 +26,18 @@ const colorGenerator = (numOfColors) => {
     return colors;
     
 }
+
 const Data = () => {
     const LIMIT_VALUE = 18;
+    const NUM_OF_COLORS = 5;
     var artist_mbid = "8f6bd1e4-fbe1-4f50-aa9b-94c450ec0f11";
     var url = "https://labs.api.listenbrainz.org/similar-artists/json?algorithm=session_based_days_7500_session_300_contribution_5_threshold_10_limit_100_filter_True_skip_30&artist_mbid=";
     const [similarArtists, setSimilarArtists] = useState([]);
     const [artist, setArtist] = useState("");
     const [limit, setLimit] = useState(LIMIT_VALUE);
+    const [colors, setColors] = useState([]);
     var transformedArtists = {};
-    var colors = colorGenerator(5); 
+
     console.log(colors);
     const fetchData = (artist_mbid) => {
         fetch(url + artist_mbid)
@@ -49,6 +52,7 @@ const Data = () => {
     
     useEffect(() => {
         fetchData(artist_mbid);
+        setColors(colorGenerator(NUM_OF_COLORS));
     }, []);
 
     var scoreList = [];  
