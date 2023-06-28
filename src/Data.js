@@ -37,8 +37,8 @@ const Data = () => {
     const [limit, setLimit] = useState(LIMIT_VALUE);
     const [colors, setColors] = useState([]);
     var transformedArtists = {};
-
-    console.log(colors);
+    var maxScore = 0;
+    
     const fetchData = (artist_mbid) => {
         fetch(url + artist_mbid)
         .then((response) => response.json())
@@ -60,10 +60,12 @@ const Data = () => {
     artistList = artistList && artistList.splice(0, limit);
     var mainArtist = artist && artist.data && artist.data[0];
     artistList && artistList.push(mainArtist);
-    console.log(artistList);    
+   
     transformedArtists = artistList && {
         "nodes": artistList.map((artist, index) => {
-            artist.score && scoreList.push(artist.score);
+            //artist.score && scoreList.push(artist.score);
+            if(artist.score > maxScore)
+                maxScore = artist.score;
             return {
                 "id": artist.name,
                 "artist_mbid": artist.artist_mbid,
@@ -74,16 +76,18 @@ const Data = () => {
             };
         }),
         "links": artistList.map((artist, index) => {
-            
+            var computedScore = 1.2 - (Math.sqrt(artist.score) / Math.sqrt(maxScore));
+            console.log(computedScore);
+            console.log(computedScore * 5000);
             return {
                 "source": mainArtist.name,
                 "target": artist.name,
-                "distance": (artist.artist_mbid != mainArtist.artist_mbid ? scoreList.scaleBetween(300, 100, artist.score) : 0),
+                "distance": (artist.artist_mbid != mainArtist.artist_mbid ? /*scoreList.scaleBetween(300, 100, Math.sqrt(artist.score))*/ computedScore * 500 : 0),
                 "strength": artist.score < 5000 ? 2 : artist.score < 6000 ? 4 : 8,
                 };
         }),
     }
-    scoreList && console.log(scoreList);
+    
     return (
         <div>
             <Input fetchData={fetchData} setLimit={setLimit}/>

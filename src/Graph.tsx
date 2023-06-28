@@ -9,7 +9,6 @@ interface GraphProps {
 }
 
 const Graph = (props: GraphProps) => {
-    console.log(props.data);
     type Node = (typeof props.data)['nodes'][number];
     type Link = (typeof props.data)['links'][number];
     
@@ -73,8 +72,8 @@ const Graph = (props: GraphProps) => {
         iterations: 120,
         centeringStrength: 0.1,
         nodeBorderWidth: 5,
-        nodeColor: node => node.color,
         linkThickness: 2,
+        nodeColor: node => node.color,
         linkColor: { from: 'source.color', modifiers: [['brighter', 0.8]] },
         linkDistance: node => node.distance,
         nodeSize: node => node.size,
