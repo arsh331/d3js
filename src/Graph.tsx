@@ -11,7 +11,6 @@ interface GraphProps {
 const Graph = (props: GraphProps) => {
     type Node = (typeof props.data)['nodes'][number];
     type Link = (typeof props.data)['links'][number];
-    
     const CustomNodeComponent = <Node extends InputNode>({
         node,
         animated: animatedProps,

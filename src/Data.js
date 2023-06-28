@@ -8,11 +8,12 @@ Array.prototype.scaleBetween = function(scaledMin, scaledMax, num) {
     return ((scaledMax-scaledMin)*(num-min)/(max-min)+scaledMin);
 }
 
-const colorGenerator = (numOfColors) => {
+const colorGenerator = () => {
+
     var red = Math.floor(Math.random() * 256);
     var green = Math.floor(Math.random() * 256);
     var blue  = Math.floor(Math.random() * 256);
-    var max = Math.max(Math.max(red, Math.max(green,blue)), 1);
+    /*var max = Math.max(Math.max(red, Math.max(green,blue)), 1);
     var step = 255 / (max * 5);
     var colors = [];
 
@@ -21,10 +22,26 @@ const colorGenerator = (numOfColors) => {
         if(i === numOfColors)
             opacity = 0.2;
         colors.push("rgba(" + Math.floor(red * i * step) + "," + Math.floor(green * i * step) + "," + Math.floor(blue * i * step) + ", " + opacity +")");
-    }
+    }*/
+
+    var color = {
+        red: red,
+        green: green,
+        blue: blue,
+        mixed1: ("rgba(" + red + "," + green + "," + blue + ", 1.0)"),
+        mixed2: ("rgba(" + red + "," + green + "," + blue + ", 0.2)")
+    };
     
-    return colors;
+    return color;
     
+}
+
+const computeColor = (color1, color2, weight, opacity) => {
+    var red = Math.floor((color2.red - color1.red) * weight + color1.red);
+    var green = Math.floor((color2.green - color1.green) * weight + color1.green);
+    var blue = Math.floor((color2.blue - color1.blue) * weight + color1.blue);          
+
+    return ("rgba(" + red + "," + green + "," + blue + ", " + opacity +" )");
 }
 
 const Data = () => {
@@ -35,7 +52,11 @@ const Data = () => {
     const [similarArtists, setSimilarArtists] = useState([]);
     const [artist, setArtist] = useState("");
     const [limit, setLimit] = useState(LIMIT_VALUE);
-    const [colors, setColors] = useState([]);
+    //const [colors, setColors] = useState([]);
+    var color1 = colorGenerator();
+    var color2 = colorGenerator();
+    console.log(color1);
+    console.log(color2);
     var transformedArtists = {};
     var maxScore = 0;
     
@@ -52,37 +73,40 @@ const Data = () => {
     
     useEffect(() => {
         fetchData(artist_mbid);
-        setColors(colorGenerator(NUM_OF_COLORS));
+        //setColors(colorGenerator(NUM_OF_COLORS));
     }, []);
 
     var scoreList = [];  
     var artistList = similarArtists && similarArtists.data && (similarArtists.data.map((artist) => artist));
     artistList = artistList && artistList.splice(0, limit);
     var mainArtist = artist && artist.data && artist.data[0];
+    if(mainArtist) 
+        mainArtist.score = 0;
     artistList && artistList.push(mainArtist);
-   
+    
+    maxScore = artistList && artistList[0].score;
+    maxScore = Math.sqrt(maxScore);
+
     transformedArtists = artistList && {
         "nodes": artistList.map((artist, index) => {
-            //artist.score && scoreList.push(artist.score);
-            if(artist.score > maxScore)
-                maxScore = artist.score;
+            var computedScore = 1.2 - (Math.sqrt(artist.score) / maxScore);
+            scoreList.push(computedScore);
+            console.log(computeColor(color1, color2, computedScore - 0.2, 1.0));
             return {
                 "id": artist.name,
                 "artist_mbid": artist.artist_mbid,
                 "size": artist.artist_mbid === mainArtist.artist_mbid ? 150 : 85,
-                "color": artist.artist_mbid === mainArtist.artist_mbid ? colors[0] : index < limit/3 ? colors[1] : index < limit/3*2 ? colors[2] : colors[3],
+                //"color": artist.artist_mbid === mainArtist.artist_mbid ? colors[0] : index < limit/3 ? colors[1] : index < limit/3*2 ? colors[2] : colors[3],
+                "color": computeColor(color1, color2, computedScore + 0.2, 1),
                 "seed": artist.artist_mbid === mainArtist.artist_mbid ? 1 : 0,
                 "score": artist.score
             };
         }),
         "links": artistList.map((artist, index) => {
-            var computedScore = 1.2 - (Math.sqrt(artist.score) / Math.sqrt(maxScore));
-            console.log(computedScore);
-            console.log(computedScore * 5000);
             return {
                 "source": mainArtist.name,
                 "target": artist.name,
-                "distance": (artist.artist_mbid != mainArtist.artist_mbid ? /*scoreList.scaleBetween(300, 100, Math.sqrt(artist.score))*/ computedScore * 500 : 0),
+                "distance": (artist.artist_mbid != mainArtist.artist_mbid ? /*scoreList.scaleBetween(300, 100, Math.sqrt(artist.score))*/ scoreList[index] * 500 : 0),
                 "strength": artist.score < 5000 ? 2 : artist.score < 6000 ? 4 : 8,
                 };
         }),
@@ -91,7 +115,7 @@ const Data = () => {
     return (
         <div>
             <Input fetchData={fetchData} setLimit={setLimit}/>
-            <Graph data={transformedArtists} fetchData={fetchData} backgroundColor={colors[4]}/>
+            <Graph data={transformedArtists} fetchData={fetchData} backgroundColor={`linear-gradient(` + color2.mixed2 + `,` + color1.mixed2 + `)`}/>
         </div>
     );
 }
