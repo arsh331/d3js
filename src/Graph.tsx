@@ -39,12 +39,23 @@ const Graph = (props: GraphProps) => {
             opacity={animatedProps.opacity}
         />
         <animated.text 
-        textAnchor='middle'
-        alignmentBaseline='middle'
+        textAnchor="middle"
+        dominantBaseline="text-after-edge"
         fontSize={to([animatedProps.size], size => size / 6)}
         style={{ pointerEvents: 'none', fill: 'white'}}
         >
-            {node.id.length > 9 ? node.id.slice(0, 6) + '...' : node.id}
+            {
+            node.id.split(" ").map((word, index) => (
+                index < 2 ?
+                <animated.tspan x={0} dy={index === 0 ? "0" : to([animatedProps.size], size => size / 6)}>
+                    {word}
+                </animated.tspan>
+                :
+                index == 2 && <animated.tspan x={0} dy={to([animatedProps.size], size => size / 6)}>
+                    ...
+                </animated.tspan>
+            ))
+            }
         </animated.text>
         </animated.g>
     )
