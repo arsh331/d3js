@@ -54,7 +54,7 @@ const Data = () => {
     const [limit, setLimit] = useState(LIMIT_VALUE);
     //const [colors, setColors] = useState([]);
     var color1 = colorGenerator();
-    var color2 = colorGenerator();
+    var color2 = color1;
     console.log(color1);
     console.log(color2);
     var transformedArtists = {};
