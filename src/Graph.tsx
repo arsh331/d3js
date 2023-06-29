@@ -40,7 +40,7 @@ const Graph = (props: GraphProps) => {
         />
         <animated.text 
         textAnchor="middle"
-        dominantBaseline="text-after-edge"
+        dominantBaseline="alphabetic"
         fontSize={to([animatedProps.size], size => size / 6)}
         style={{ pointerEvents: 'none', fill: 'white'}}
         >
