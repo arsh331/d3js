@@ -41,9 +41,10 @@ const Graph = (props: GraphProps) => {
         <animated.text 
         textAnchor='middle'
         alignmentBaseline='middle'
-        style={{ pointerEvents: 'none', fontSize: '16px', fill: 'white'}}
+        fontSize={to([animatedProps.size], size => size / 6)}
+        style={{ pointerEvents: 'none', fill: 'white'}}
         >
-            {node.id.length > 10 ? node.id.slice(0, 6) + '...' : node.id}
+            {node.id.length > 9 ? node.id.slice(0, 6) + '...' : node.id}
         </animated.text>
         </animated.g>
     )
@@ -59,7 +60,7 @@ const Graph = (props: GraphProps) => {
         >
             <strong>Name: {node.id}</strong>
             <br />
-            {node.data.score && <>Score: {node.data.score}</>}
+            {node.data.score!= 0 && <>Score: {node.data.score}</>}
         </div>
     )
 

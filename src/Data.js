@@ -91,7 +91,7 @@ const Data = () => {
         "nodes": artistList.map((artist, index) => {
             var computedScore = 1.2 - (Math.sqrt(artist.score) / maxScore);
             scoreList.push(computedScore);
-            console.log(computeColor(color1, color2, computedScore - 0.2, 1.0));
+            console.log(computedScore - 0.2);
             return {
                 "id": artist.name,
                 "artist_mbid": artist.artist_mbid,
