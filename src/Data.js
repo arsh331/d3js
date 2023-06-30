@@ -10,9 +10,9 @@ Array.prototype.scaleBetween = function(scaledMin, scaledMax, num) {
 
 const colorGenerator = () => {
 
-    var red = Math.floor(Math.random() * 256);
-    var green = Math.floor(Math.random() * 256);
-    var blue  = Math.floor(Math.random() * 256);
+    var red = Math.floor(Math.random() * 200);
+    var green = Math.floor(Math.random() * 200);
+    var blue  = Math.floor(Math.random() * 200);
     /*var max = Math.max(Math.max(red, Math.max(green,blue)), 1);
     var step = 255 / (max * 5);
     var colors = [];
@@ -36,12 +36,20 @@ const colorGenerator = () => {
     
 }
 
-const computeColor = (color1, color2, weight, opacity) => {
+const computeColor = (color1, color2, weight) => {
     var red = Math.floor((color2.red - color1.red) * weight + color1.red);
     var green = Math.floor((color2.green - color1.green) * weight + color1.green);
     var blue = Math.floor((color2.blue - color1.blue) * weight + color1.blue);          
 
-    return ("rgba(" + red + "," + green + "," + blue + ", " + opacity +" )");
+    var color = {
+        red: red,
+        green: green,
+        blue: blue,
+        mixed1: ("rgba(" + red + "," + green + "," + blue + ", 1.0)"),
+        mixed2: ("rgba(" + red + "," + green + "," + blue + ", 0.2)")
+    };
+
+    return color;
 }
 
 const Data = () => {
@@ -71,9 +79,12 @@ const Data = () => {
     const setData = (data) => {
         setArtist(data[1]);
         setSimilarArtists(data[3]);
-        setColors([colors[1], color2]);
+        setColors([computeColor(colors[0], colors[1], 0.3), color2]);
     }
-    
+    const changeColor = (color) => {
+        setColors([color, color1]);
+    }
+
     useEffect(() => {
         fetchData(artist_mbid);
         setColors([color1, color2]);
@@ -97,9 +108,10 @@ const Data = () => {
             var computedScore = maxScore / Math.sqrt(artist.score);
             scoreList.push(computedScore);
             console.log(computedScore);
-
+            var computedColor = computeColor(colors[0], colors[1], (index / LIMIT_VALUE * computedScore));
             if(artist === mainArtist){
                 computedScore = 1;
+                computedColor = colors[0];
                 artistList.pop(mainArtist);
                 scoreList.pop();
                 index = 0;
@@ -110,7 +122,8 @@ const Data = () => {
                 "artist_mbid": artist.artist_mbid,
                 "size": artist.artist_mbid === mainArtist.artist_mbid ? 150 : 85,
                 //"color": artist.artist_mbid === mainArtist.artist_mbid ? colors[0] : index < limit/3 ? colors[1] : index < limit/3*2 ? colors[2] : colors[3],
-                "color": computeColor(colors[0], colors[1], (index /LIMIT_VALUE * computedScore), 1),
+                "color": computedColor.mixed1,
+                "colorObject": computedColor,
                 "seed": artist.artist_mbid === mainArtist.artist_mbid ? 1 : 0,
                 "score": artist.score
             };

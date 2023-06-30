@@ -48,7 +48,7 @@ const Graph = (props: GraphProps) => {
             node.id.split(" ").map((word, index) => (
                 index < 2 ?
                 <animated.tspan x={0} dy={index === 0 ? "0" : to([animatedProps.size], size => size / 6)}>
-                    {word}
+                    {word.length > 10 ? word.substring(0, 10) + "..." : word}
                 </animated.tspan>
                 :
                 index == 2 && <animated.tspan x={0} dy={to([animatedProps.size], size => size / 6)}>
