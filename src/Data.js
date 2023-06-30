@@ -86,7 +86,7 @@ const Data = () => {
     maxScore = Math.sqrt(maxScore);
 
     if(mainArtist) 
-        mainArtist.score = maxScore;
+        mainArtist.score = 0;
     artistList && artistList.push(mainArtist);
 
     transformedArtists = artistList && {
