@@ -80,24 +80,33 @@ const Data = () => {
     var artistList = similarArtists && similarArtists.data && (similarArtists.data.map((artist) => artist));
     artistList = artistList && artistList.splice(0, limit);
     var mainArtist = artist && artist.data && artist.data[0];
-    if(mainArtist) 
-        mainArtist.score = 0;
-    artistList && artistList.push(mainArtist);
     
-    maxScore = artistList && artistList[0].score;
+    
+    maxScore = artistList && artistList[LIMIT_VALUE - 1].score;
     maxScore = Math.sqrt(maxScore);
+
+    if(mainArtist) 
+        mainArtist.score = maxScore;
+    artistList && artistList.push(mainArtist);
 
     transformedArtists = artistList && {
         "nodes": artistList.map((artist, index) => {
-            var computedScore = 1.2 - (Math.sqrt(artist.score) / maxScore);
+            var computedScore = maxScore / Math.sqrt(artist.score);
             scoreList.push(computedScore);
-            console.log(computedScore - 0.2);
+            console.log(computedScore);
+
+            if(artist === mainArtist){
+                artistList.pop(mainArtist);
+                scoreList.pop();
+                index = 0;
+            }
+            
             return {
                 "id": artist.name,
                 "artist_mbid": artist.artist_mbid,
                 "size": artist.artist_mbid === mainArtist.artist_mbid ? 150 : 85,
                 //"color": artist.artist_mbid === mainArtist.artist_mbid ? colors[0] : index < limit/3 ? colors[1] : index < limit/3*2 ? colors[2] : colors[3],
-                "color": computeColor(color1, color2, computedScore + 0.2, 1),
+                "color": computeColor(color1, color2, index / LIMIT_VALUE, 1),
                 "seed": artist.artist_mbid === mainArtist.artist_mbid ? 1 : 0,
                 "score": artist.score
             };
@@ -106,7 +115,7 @@ const Data = () => {
             return {
                 "source": mainArtist.name,
                 "target": artist.name,
-                "distance": (artist.artist_mbid != mainArtist.artist_mbid ? /*scoreList.scaleBetween(300, 100, Math.sqrt(artist.score))*/ scoreList[index] * 500 : 0),
+                "distance": (artist.artist_mbid != mainArtist.artist_mbid ? /*scoreList.scaleBetween(300, 100, Math.sqrt(artist.score))*/ scoreList[index] * 250 : 0),
                 "strength": artist.score < 5000 ? 2 : artist.score < 6000 ? 4 : 8,
                 };
         }),

@@ -86,7 +86,7 @@ const Graph = (props: GraphProps) => {
         linkThickness: 2,
         nodeColor: node => node.color,
         linkColor: { from: 'source.color', modifiers: [['brighter', 0.8]] },
-        linkDistance: node => node.distance,
+        linkDistance: link => link.distance,
         nodeSize: node => node.size,
         activeNodeSize: node => node.size * 1.2,
         inactiveNodeSize: node => node.size / 1.2,
