@@ -49,12 +49,14 @@ const Data = () => {
     const NUM_OF_COLORS = 5;
     var artist_mbid = "8f6bd1e4-fbe1-4f50-aa9b-94c450ec0f11";
     var url = "https://labs.api.listenbrainz.org/similar-artists/json?algorithm=session_based_days_7500_session_300_contribution_5_threshold_10_limit_100_filter_True_skip_30&artist_mbid=";
+    var color1 = colorGenerator();
+    var color2 = colorGenerator();
+
     const [similarArtists, setSimilarArtists] = useState([]);
     const [artist, setArtist] = useState("");
     const [limit, setLimit] = useState(LIMIT_VALUE);
-    //const [colors, setColors] = useState([]);
-    var color1 = colorGenerator();
-    var color2 = colorGenerator();
+    const [colors, setColors] = useState([color1, color2]);
+    
     console.log(color1);
     console.log(color2);
     var transformedArtists = {};
@@ -69,11 +71,12 @@ const Data = () => {
     const setData = (data) => {
         setArtist(data[1]);
         setSimilarArtists(data[3]);
+        setColors([colors[1], color2]);
     }
     
     useEffect(() => {
         fetchData(artist_mbid);
-        //setColors(colorGenerator(NUM_OF_COLORS));
+        setColors([color1, color2]);
     }, []);
 
     var scoreList = [];  
@@ -107,7 +110,7 @@ const Data = () => {
                 "artist_mbid": artist.artist_mbid,
                 "size": artist.artist_mbid === mainArtist.artist_mbid ? 150 : 85,
                 //"color": artist.artist_mbid === mainArtist.artist_mbid ? colors[0] : index < limit/3 ? colors[1] : index < limit/3*2 ? colors[2] : colors[3],
-                "color": computeColor(color1, color2, (index /LIMIT_VALUE * computedScore), 1),
+                "color": computeColor(colors[0], colors[1], (index /LIMIT_VALUE * computedScore), 1),
                 "seed": artist.artist_mbid === mainArtist.artist_mbid ? 1 : 0,
                 "score": artist.score
             };
@@ -125,7 +128,7 @@ const Data = () => {
     return (
         <div>
             <Input fetchData={fetchData} setLimit={setLimit}/>
-            <Graph data={transformedArtists} fetchData={fetchData} backgroundColor={`linear-gradient(` + color2.mixed2 + `,` + color1.mixed2 + `)`}/>
+            <Graph data={transformedArtists} fetchData={fetchData} backgroundColor={`linear-gradient(` + colors[1].mixed2 + `,` + colors[0].mixed2 + `)`}/>
         </div>
     );
 }
