@@ -96,6 +96,7 @@ const Data = () => {
             console.log(computedScore);
 
             if(artist === mainArtist){
+                computedScore = 1;
                 artistList.pop(mainArtist);
                 scoreList.pop();
                 index = 0;
@@ -106,7 +107,7 @@ const Data = () => {
                 "artist_mbid": artist.artist_mbid,
                 "size": artist.artist_mbid === mainArtist.artist_mbid ? 150 : 85,
                 //"color": artist.artist_mbid === mainArtist.artist_mbid ? colors[0] : index < limit/3 ? colors[1] : index < limit/3*2 ? colors[2] : colors[3],
-                "color": computeColor(color1, color2, index / LIMIT_VALUE, 1),
+                "color": computeColor(color1, color2, (index /LIMIT_VALUE * computedScore), 1),
                 "seed": artist.artist_mbid === mainArtist.artist_mbid ? 1 : 0,
                 "score": artist.score
             };
