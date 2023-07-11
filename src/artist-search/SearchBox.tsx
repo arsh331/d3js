@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import SearchDropdown from "./SearchDropdown";
-import { throttle } from "lodash";
+import { set, throttle } from "lodash";
 interface InputProps {
     onLimitChange: (limit: number) => void;
     onArtistChange: (artist_mbid: string) => void;
@@ -25,7 +25,7 @@ const Input = (props: InputProps) => {
     const [searchQuery, setSearchQuery] = React.useState<string>("");
     // State to store the search results (list of artists)
     const [searchResults, setSearchResults] = React.useState<Array<ArtistType>>([]);
-    const [limit, setLimit] = React.useState<number>();
+    const [limit, setLimit] = React.useState<number>(18);
     const [artist, setArtist] = React.useState<ArtistType>();
     // The URL for the MusicBrainz API
     const LOOKUP_URL = `https://musicbrainz.org/ws/2/artist/?query=artist:${searchQuery}&fmt=json&limit=10`;
@@ -77,6 +77,16 @@ const Input = (props: InputProps) => {
         if(artist?.id !== undefined)
             props.onArtistChange(artist.id);
     }
+    useEffect(() => {
+        props.onLimitChange(limit);
+        if(artist?.id !== undefined)
+            props.onArtistChange(artist.id);
+    }, [limit, artist]);
+    const setGraphLimit = (event: React.FormEvent<HTMLInputElement>): void => {
+        var limit = event.currentTarget.value;
+        var limitInt = parseInt(limit);
+        setLimit(limitInt);
+    }
 
     return (
         <form 
@@ -99,13 +109,13 @@ const Input = (props: InputProps) => {
                     width: "20vh",
                 }
             }
-            onClick={(e) => {const dd = document.getElementById("search-dropdown"); dd?.style.display === "flex" ? dd.style.display = "none" : dd!.style.display = "flex";}}
+            onClick={(e) => {const dd = document.getElementById("search-dropdown"); dd?.style.display === "flex" && searchQuery ? dd.style.display = "none" : dd!.style.display = "flex";}}
             >
                 <input id="artist-input" style={{height: "inherit", width: "inherit"}} type="search" name="artist_mbid" placeholder="Artist name" onChange={e => setSearchQuery(e.target.value)}/>   
                 <SearchDropdown searchResults={searchResults} onArtistChange={setArtist}/>
             </div>
-            <input type="text" name="limit" placeholder="Graph size"/>
-            <button type="submit">Generate graph</button>
+            <input style={{height: "auto"}}type="number" name="limit" placeholder="Graph size" min="1" max="25" onChange={setGraphLimit} defaultValue={limit}/>
+            <span className="validity"></span>
         </form>
 
     );

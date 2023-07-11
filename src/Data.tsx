@@ -70,7 +70,6 @@ const Data = () => {
 
     var color1 = colorGenerator();
     var color2 = color1.clone().tetrad()[1];
-    console.log(color1 + " " + color1.clone().analogous());
     const [similarArtists, setSimilarArtists] = useState<Array<ArtistType>>();
     const [mainArtist, setMainArtist] = useState<ArtistType>();
     const [similarArtistsLimit, setSimilarArtistsLimit] = useState(SIMILAR_ARTISTS_LIMIT_VALUE);
