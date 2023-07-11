@@ -46,7 +46,7 @@ type GraphDataType = {
 }
 
 const colorGenerator = ():  tinycolor.Instance=> {
-    var color = tinycolor("hsv(" + Math.random() * 360 + ", 100%, 70%)");
+    var color = tinycolor("hsv(" + Math.random() * 360 + ", 90%, 90%)");
     return color;
 }
 
@@ -55,9 +55,9 @@ const Data = () => {
     const SIMILAR_ARTISTS_LIMIT_VALUE = 18;
     const BASE_URL = "https://labs.api.listenbrainz.org/similar-artists/json?algorithm=session_based_days_7500_session_300_contribution_5_threshold_10_limit_100_filter_True_skip_30&artist_mbid=";
     // Serves as the maximum distance between nodes
-    const LINK_DIST_MULTIPLIER = 150;
+    const LINK_DIST_MULTIPLIER = 250;
     // Serves as the minimum distance between nodes
-    const MIN_LINK_DIST = 100;
+    const MIN_LINK_DIST = 0;
     // Size of the main node
     const MAIN_NODE_SIZE = 150;
     // Size of the similar nodes
@@ -69,8 +69,8 @@ const Data = () => {
     const NULL_SCORE = Infinity;
 
     var color1 = colorGenerator();
-    var color2 = colorGenerator();
-
+    var color2 = color1.clone().tetrad()[1];
+    console.log(color1 + " " + color1.clone().analogous());
     const [similarArtists, setSimilarArtists] = useState<Array<ArtistType>>();
     const [mainArtist, setMainArtist] = useState<ArtistType>();
     const [similarArtistsLimit, setSimilarArtistsLimit] = useState(SIMILAR_ARTISTS_LIMIT_VALUE);
