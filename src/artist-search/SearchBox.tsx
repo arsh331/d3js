@@ -28,7 +28,7 @@ const Input = (props: InputProps) => {
     const [limit, setLimit] = React.useState<number>();
     const [artist, setArtist] = React.useState<ArtistType>();
     // The URL for the MusicBrainz API
-    const LOOKUP_URL = `http://musicbrainz.org/ws/2/artist/?query=artist:${searchQuery}&fmt=json&limit=10`;
+    const LOOKUP_URL = `https://musicbrainz.org/ws/2/artist/?query=artist:${searchQuery}&fmt=json&limit=10`;
     const UNDEFINED_PROPERTY = "Unknown";
 
     // Fetches the artists from the MusicBrainz API
