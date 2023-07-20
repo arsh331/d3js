@@ -16,7 +16,7 @@ type ArtistLookupResponseType = {
 const ArtistLookup = throttle(async (searchQuery: string):  Promise<Array<ArtistType>>=> {
     var resultsArray: Array<ArtistType> = [];
     const UNDEFINED_PROPERTY = "Unknown";
-    const LOOKUP_URL = `http://musicbrainz.org/ws/2/artist/?query=artist:${searchQuery}&fmt=json`;
+    const LOOKUP_URL = `https://musicbrainz.org/ws/2/artist/?query=artist:${searchQuery}&fmt=json`;
     var data: ArtistLookupResponseType;
     // Fetches the artists from the MusicBrainz API
     try {
