@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import SimilarArtistsGraph from "./SimilarArtistsGraph";
 import tinycolor from "tinycolor2";
 import SearchBox from "./artist-search/SearchBox";
+import Panel from "./artist-panel/Panel";
 
 type ArtistType = {
     artist_mbid: string;
@@ -70,7 +71,7 @@ const Data = () => {
 
     var color1 = colorGenerator();
     var color2 = color1.clone().tetrad()[1];
-    const [similarArtistsList, setSimilarArtistsList] = useState<Array<ArtistType>>();
+    const [similarArtistsList, setSimilarArtistsList] = useState<Array<ArtistType>>([]);
     const [mainArtist, setMainArtist] = useState<ArtistType>();
     const [similarArtistsLimit, setSimilarArtistsLimit] = useState(SIMILAR_ARTISTS_LIMIT_VALUE);
     const [colors, setColors] = useState([color1, color2]);
@@ -131,7 +132,7 @@ const Data = () => {
     // Checking if mainArtist is defined
     if(mainArtist) {
         transformedArtists = {
-            nodes: [mainArtist, ...similarArtistsList!].map((similarArtist: ArtistType, index: number): NodeType => {
+            nodes: [mainArtist, ...similarArtistsList].map((similarArtist: ArtistType, index: number): NodeType => {
                 let computedScore;
                 let computedColor;
                 if(similarArtist !== mainArtist) {
@@ -150,7 +151,7 @@ const Data = () => {
                     score: similarArtist.score ?? NULL_SCORE
                 };
             }),
-            links: similarArtistsList!.map((similarArtist: ArtistType, index: number): LinkType => {
+            links: similarArtistsList.map((similarArtist: ArtistType, index: number): LinkType => {
                 return {
                     source: mainArtist?.name ?? "",
                     target: similarArtist.name,
@@ -161,11 +162,12 @@ const Data = () => {
     }
     const backgroundColor1 = colors[0].clone().setAlpha(BACKGROUND_ALPHA).toRgbString();
     const backgroundColor2 = colors[1].clone().setAlpha(BACKGROUND_ALPHA).toRgbString();
-    const backgroundGradient = `linear-gradient(` + backgroundColor1 + `,` + backgroundColor2 + `)`;
+    const backgroundGradient = `linear-gradient(` + Math.random() * 360 + `deg ,` + backgroundColor1 + `,` + backgroundColor2 + `)`;
     return (
         <div>
-            <SearchBox onArtistChange={setArtistMBID} currentArtistMbid={artistMBID} onsimilarArtistsLimitChange={setSimilarArtistsLimit} currentsimilarArtistsLimit={similarArtistsLimit}/>
+            <SearchBox onArtistChange={setArtistMBID} onSimilarArtistsLimitChange={setSimilarArtistsLimit} currentsimilarArtistsLimit={similarArtistsLimit}/>
             <SimilarArtistsGraph onArtistChange={setArtistMBID} data={transformedArtists} background={backgroundGradient}/>
+            <Panel artist={mainArtist} />
         </div>
     );
 }

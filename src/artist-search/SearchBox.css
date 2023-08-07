@@ -1,20 +1,17 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-size: 16px;
-}
 .search-box {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   height: 4vh;
-  padding: 0vh;
   margin: 2vh;
+  font-size: 14px;
+  font-family: Sintony, sans-serif;
+  font-weight: 400;
+  font-stretch: 100%;
 }
 .artist-input {
   height: inherit;
-  width: 15%;
+  width: 10%;
 }
 .artist-input-box{
   display: flex;
@@ -27,7 +24,7 @@
   height: 100%;
   width: 80%;
   border-radius: 0;
-  border: 1.5px solid rgba(27, 27, 27, 0.5);
+  border: 2px solid #E0E0E0;
 }
 #artist-input-icon {
   vertical-align: middle;
@@ -37,7 +34,8 @@
   width: 20%;
 }
 #artist-input-icon:hover, #graph-size-input-minus:hover, #graph-size-input-plus:hover {
-  background-color: #262350;
+  background-color: #413b89;
+  border-color: #211e45;
   cursor: pointer;
 }
 #search-dropdown {
@@ -46,13 +44,31 @@
   max-height: 25vh;
   overflow: scroll;
   width: 100%;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.175);
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background-color: #E0E0E0;
+  font-size: 14px;
+}
+.search-item {
+  outline: inherit;
+  border-color:rgba(27, 27, 27, 0.3);
+  cursor: pointer;
+  background-color: #ffffff;
+  z-index:1;
+  padding: 4%;
+  font-size: inherit;
+}
+.search-item:hover {
+  color: #fff;
+  background-color: #353070;
 }
 
 .graph-size-input{
   display: flex;
   flex-direction: row;
   height: 100%;
-  width: 25%;
+  width: 20%;
   
 }
 #graph-size-input-label {
@@ -63,7 +79,9 @@
   width: 10%;
   min-width: inherit;
   border-radius: 0;
-  border: 1.5px solid rgba(27, 27, 27, 0.5);
+  border: 2px solid #E0E0E0;
+  border-left: none;
+  border-right: none;
   text-align: center;
 }
 #graph-size-input-minus, #graph-size-input-plus{
@@ -90,20 +108,4 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
-}
-
-.search-item {
-  position: relative;
-  border-top: 0.5px solid;
-  border-left: 0.5px solid;
-  border-right: 0.5px solid;
-  border-color:rgba(27, 27, 27, 0.3);
-  cursor: pointer;
-  background-color: rgb(255, 255, 255, 0.9);
-  z-index:1;
-  padding: 5%;
-}
-
-.search-item:hover {
-  background-color: rgb(200, 200, 200);
 }

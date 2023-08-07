@@ -1,14 +1,14 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SearchDropdown from "./SearchDropdown";
-import ArtistLookup from "./ArtistLookup";
-import { ArtistType } from "./ArtistLookup";
+import artistLookup from "./artistLookup";
+import { ArtistType } from "./artistLookup";
 import { faMagnifyingGlass, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./SearchBox.css";
+import { debounce, throttle } from "lodash";
 interface SearchBoxProps {
     currentsimilarArtistsLimit: number;
-    onsimilarArtistsLimitChange: (similarArtistsLimit: number) => void;
-    currentArtistMbid: string;
+    onSimilarArtistsLimitChange: (similarArtistsLimit: number) => void;
     onArtistChange: (artist_mbid: string) => void;
 }
 
@@ -16,56 +16,84 @@ const SearchBox = (props: SearchBoxProps) => {
     // State to store the search results (list of artists)
     const [searchResults, setSearchResults] = React.useState<Array<ArtistType>>([]);
     const [searchQuery, setSearchQuery] = React.useState<string>("");
-    const [similarArtistsLimit, setsimilarArtistsLimit] = React.useState<number>(props.currentsimilarArtistsLimit);
-    const [artistMbid, setArtistMbid] = React.useState<string>(props.currentArtistMbid);
-    // Delay before dropdown disappears to make sure user can click on it
-    const dropdownDelay = 200;
+    // State to toggle the dropdown menu for search
+    const [openDropdown, setOpenDropdown] = useState(false);
 
+    /* Below is the piece of the code with problem.
+    *   My plan: 
+    *       I decided to make the api call outside of this component in artistLookup, a bit different from SearchTrackorMBID.
+    *       Thinking it would decrease the complexity of the code but I guess I added more unintentionally.
+    *   Problem:
+    *       Oftentimes the results presented in the dropdown would lag behind the search query e.g. Bruno Mars even though the api call
+    *       was made correctly. I believe the problem is how React re-renders on state changes but I am very unsure. In this part I use 
+    *       throttle in the artistLookup.
+    * /
+    
+    /*
     // Lookup the artist based on the query
     const getArtists = async (): Promise<void> => {
-        if(searchQuery !== "" || searchQuery.trim() !== ""){
-            const results = await ArtistLookup(searchQuery);
+        if(searchQuery.length && searchQuery.trim() !== ""){
+            let results = await artistLookup(searchQuery);
             setSearchResults(results ?? []);
+            //console.log(searchResults);
+            // Open the dropdown if any results exist
+            if(searchResults.length) {
+                //console.log(searchResults);
+                setOpenDropdown(true);
+            }
         }
         else{
             setSearchResults([]);
         }
+    };
+
+    const handleQueryChange = (query: string) => {
+        setSearchQuery(query);
     }
-    // Lookup the artist based on the query
+
     useEffect(() => {
         getArtists();
-    }, [searchQuery]);
-    
-    // Set similarArtistsLimit based on user input
-    const handlesimilarArtistsLimitChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        let similarArtistsLimit = event.currentTarget.valueAsNumber;
-        setsimilarArtistsLimit(similarArtistsLimit);
+    },[searchQuery]);
+    */
+
+    /**
+     * Solution:
+     *  I was able to look up an article for the problem, https://www.developerway.com/posts/debouncing-in-react
+     *  The solution works as expected but I feel like it might be a bit hard to understand what's going on.
+     */
+
+    const getArtists = async () => {
+        if(searchQuery.length && searchQuery.trim().length) {
+            let results = await artistLookup(searchQuery);
+            setSearchResults(results);
+            setOpenDropdown(true);
+        }
     }
-    // Set the artist and similarArtistsLimit based on user input
+    const getArtistsRef = useRef(getArtists);
+    
     useEffect(() => {
-        props.onsimilarArtistsLimitChange(similarArtistsLimit);
-        props.onArtistChange(artistMbid);
-        setSearchQuery("");
-    }, [similarArtistsLimit, artistMbid]);
+        // Update the getArtists reference when searchQuery gets updated.
+        getArtistsRef.current = getArtists;
+    }, [searchQuery]);
 
-    // Hide the dropdown when the user clicks outside of it
-    const toggleDropdown = () => setTimeout(() => {
-        const dropdown = document.getElementById("search-dropdown");
-        dropdown?.style.display === "flex" ? dropdown.style.display = "none" : dropdown!.style.display = "flex";
-    }, dropdownDelay);
+    // Create a throttled function using the current reference of getArtists
+    const throttledGetArtists = useMemo(() => {
+        return throttle(() => {
+            getArtistsRef.current?.();  
+        }, 800, {leading: false, trailing: true})
+    }, []);
 
+    // Lookup the artist based on the query
+    const handleQueryChange = (query: string) => {
+        setSearchQuery(query);
+        throttledGetArtists();
+    }
+    
     const increment = () => {
-        let input = document.getElementById("graph-size-input-number") as HTMLInputElement;
-        input.stepUp();
-        // Dispatch change event to trigger onChange, so the custom buttons also trigger the event
-        input.dispatchEvent(new Event('change', { bubbles: true }));
-        
+        props.onSimilarArtistsLimitChange(props.currentsimilarArtistsLimit + 1);
     }
     const decrement = () => {
-        let input = document.getElementById("graph-size-input-number") as HTMLInputElement;
-        input.stepDown();
-        // Dispatch change event to trigger onChange, so the custom buttons also trigger the event
-        input.dispatchEvent(new Event('change', { bubbles: true }));
+        props.onSimilarArtistsLimitChange(props.currentsimilarArtistsLimit - 1);
     }
     return (
         <form
@@ -74,8 +102,6 @@ const SearchBox = (props: SearchBoxProps) => {
         >
             <div
             className="artist-input"
-            onFocus={toggleDropdown}
-            onBlur={toggleDropdown}
             >
                 <div
                 className="artist-input-box"
@@ -85,7 +111,7 @@ const SearchBox = (props: SearchBoxProps) => {
                     type="search"
                     name="artist_mbid" 
                     placeholder="Artist name" 
-                    onChange={e => setSearchQuery(e.target.value)}
+                    onChange={e => handleQueryChange(e.target.value)}
                     value={searchQuery}
                 />
                     <button 
@@ -98,11 +124,14 @@ const SearchBox = (props: SearchBoxProps) => {
                         />   
                     </button>
                 </div>
-                <SearchDropdown 
-                searchResults={searchResults} 
-                onArtistChange={setArtistMbid} 
-                id={"search-dropdown"}
-                />
+                {openDropdown && (
+                    <SearchDropdown 
+                    searchResults={searchResults} 
+                    onArtistChange={props.onArtistChange}
+                    onDropdownChange={setOpenDropdown} 
+                    id={"search-dropdown"}
+                    />)
+                }
             </div>
             <div
             className="graph-size-input"
@@ -126,10 +155,9 @@ const SearchBox = (props: SearchBoxProps) => {
             id="graph-size-input-number" 
             type="number" 
             name="similarArtistsLimit" 
-            placeholder="Graph size" 
-            min="1" max="25"  
-            onChange={handlesimilarArtistsLimitChange} 
-            defaultValue={similarArtistsLimit}
+            placeholder="Graph size"   
+            onChange={e => props.onSimilarArtistsLimitChange(e.target.valueAsNumber)} 
+            value={props.currentsimilarArtistsLimit}
             required
             />
             <span 
