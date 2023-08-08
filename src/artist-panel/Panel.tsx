@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Panel.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { ArtistType } from "../Data";
 import infoLookup from "./infoLookup";
-import { WikiReponseType, WikiDataType} from "./infoLookup";
 import parse from 'html-react-parser';
 interface PanelProps {
-    artist: ArtistType | undefined;
+    artist: ArtistType;
 }
 
 type ArtistInfoType = {
@@ -19,37 +18,34 @@ type ArtistInfoType = {
     mbLink: string;
 }
 const Panel = (props: PanelProps) => {
-    var artistData: ArtistInfoType;
-    let ARTIST_URL: string;
-    let WIKI_URL: string;
-    let wikipediaExtract;
-    const lookup = async () => {
-        if(props.artist) {
-            ARTIST_URL = `https://musicbrainz.org/artist/${props.artist.artist_mbid}`;
-            WIKI_URL = `${ARTIST_URL}/wikipedia-extract`;
-            const response = await fetch(WIKI_URL);
-            const data = await response.json();
-            let wikiData = data.wikipediaExtract.content;
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(wikiData, 'text/html');
-            let paragraphs = Array.from(doc.querySelectorAll('p')).map((p) => p.textContent);
-            if(paragraphs.length > 1) {
-                wikipediaExtract = paragraphs[1]! + paragraphs[2]!;
-                console.log(wikipediaExtract);
-            }
-        }    
-    }
-    lookup();
+    const [artistInfo, setArtistInfo] = useState<ArtistInfoType | null>(null);
+    useEffect(() => {
+        const getArtistInfo = async () => {
+            let artistApiInfo = await infoLookup(props.artist.artist_mbid);
+            const MB_URL = `https://musicbrainz.org/artist/${props.artist.artist_mbid}`;
+            let newArtistInfo: ArtistInfoType = {
+                name: props.artist.name,
+                type: props.artist.type ?? "Unknown",
+                born: artistApiInfo[1],
+                area: artistApiInfo[2],
+                wikiData: artistApiInfo[0],
+                mbLink: MB_URL
+            };
+            setArtistInfo(newArtistInfo);
+        }
+        getArtistInfo();
+    }, [props.artist]);
+    
     return(
-        props.artist ?
+        artistInfo ?
         <div 
         className="artist-panel"
         >
             <div 
             className="artist-header"
             >
-                <h2>{props.artist.name}</h2>
-                <p>{props.artist.type}</p>
+                <h2>{artistInfo.name}</h2>
+                <p>{artistInfo.type}</p>
             </div>
             <div
             className="artist-info"
@@ -57,21 +53,21 @@ const Panel = (props: PanelProps) => {
                 <div
                 className="area"
                 >
-                    <strong>Born: </strong>
+                    <strong>Born: </strong>{artistInfo.born}
                     <br />
-                    <strong>Area: </strong>
+                    <strong>Area: </strong>{artistInfo.area}
                 </div>
                 <div
                 className="wiki"
                 >
-                    <p>{wikipediaExtract}</p>
+                    {artistInfo.wikiData}
                 </div>
                 <div
                 className="mb-link"
                 >
                 <a
                 id="mb-link-button"
-                href={`google.com`}
+                href={artistInfo.mbLink}
                 target="_blank"
                 >
                     More
@@ -103,3 +99,4 @@ const Panel = (props: PanelProps) => {
 }
 
 export default Panel;
+export type { ArtistInfoType };
